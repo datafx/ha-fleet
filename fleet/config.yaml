@@ -1,5 +1,5 @@
 name: Fleet
-version: "4.92.1"
+version: "4.92.1-1"
 slug: fleet
 image: ghcr.io/datafx/{arch}-ha-fleet
 description: Fleet (osquery/fleetd) device management server with bundled MySQL 8.4 and Redis
@@ -25,12 +25,16 @@ options:
   ssl: true
   certfile: fullchain.pem
   keyfile: privkey.pem
+  tls_hostnames:
+    - homeassistant.local
   debug: false
   innodb_buffer_pool_mb: 256
 schema:
   ssl: bool
   certfile: str
   keyfile: str
+  tls_hostnames:
+    - str
   license_key: password?
   debug: bool
   innodb_buffer_pool_mb: int(64,4096)
