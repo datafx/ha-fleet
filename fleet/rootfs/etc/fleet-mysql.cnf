@@ -1,0 +1,14 @@
+[mysqld]
+datadir               = /data/mysql
+socket                = /run/mysqld/mysqld.sock
+pid-file              = /run/mysqld/mysqld.pid
+bind-address          = 127.0.0.1
+port                  = 3306
+mysqlx                = OFF
+skip-name-resolve
+# MySQL 8 enables binary logging by default; with no replica it only eats /data.
+skip-log-bin
+event_scheduler       = ON
+performance_schema    = OFF
+max_connections       = 100
+# innodb_buffer_pool_size is passed on the command line from options.json

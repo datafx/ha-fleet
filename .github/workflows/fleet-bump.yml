@@ -1,0 +1,64 @@
+name: Check for new Fleet release
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare latest Fleet server release to pinned version
+        id: fleet
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The repo also tags orbit/fleetd/fleetctl releases; keep only fleet-vX.Y.Z,
+          # and sort by version so a late patch to an older minor never wins.
+          latest=$(gh release list -R fleetdm/fleet --exclude-drafts --exclude-pre-releases -L 100 \
+                     --json tagName --jq '.[].tagName' \
+                   | grep -E '^fleet-v[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/^fleet-v//' | sort -V | tail -n1)
+          current=$(sed -nE 's/^ARG FLEET_VERSION=(.*)$/\1/p' fleet/Dockerfile)
+          test -n "$latest" && test -n "$current"
+          echo "current=$current latest=$latest"
+          newer=$(printf '%s\n%s\n' "$current" "$latest" | sort -V | tail -n1)
+          if [ "$latest" != "$current" ] && [ "$newer" = "$latest" ]; then
+            echo "update=true" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=$latest" >> "$GITHUB_OUTPUT"
+
+      - name: Update Dockerfile, config.yaml and CHANGELOG
+        if: steps.fleet.outputs.update == 'true'
+        env:
+          V: ${{ steps.fleet.outputs.version }}
+        run: |
+          sed -i -E "s/^ARG FLEET_VERSION=.*/ARG FLEET_VERSION=${V}/" fleet/Dockerfile
+          sed -i -E "s/^version: .*/version: \"${V}\"/" fleet/config.yaml
+          { printf '## %s\n\n- Update Fleet server to [v%s](https://github.com/fleetdm/fleet/releases/tag/fleet-v%s)\n\n' "$V" "$V" "$V"
+            cat fleet/CHANGELOG.md; } > /tmp/CHANGELOG.md
+          mv /tmp/CHANGELOG.md fleet/CHANGELOG.md
+
+      # Validates the release asset exists and the binary runs (Dockerfile runs `fleet version`).
+      - name: Test build
+        if: steps.fleet.outputs.update == 'true'
+        run: docker build --platform linux/amd64 fleet
+
+      - name: Open pull request
+        if: steps.fleet.outputs.update == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: bump/fleet-${{ steps.fleet.outputs.version }}
+          delete-branch: true
+          commit-message: "Fleet v${{ steps.fleet.outputs.version }}"
+          title: "Fleet v${{ steps.fleet.outputs.version }}"
+          body: |
+            Bumps the Fleet server to [v${{ steps.fleet.outputs.version }}](https://github.com/fleetdm/fleet/releases/tag/fleet-v${{ steps.fleet.outputs.version }}).
+
+            Test build passed. Check the release notes for MySQL/Redis requirement changes before merging.

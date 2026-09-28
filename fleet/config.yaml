@@ -1,0 +1,36 @@
+name: Fleet
+version: "4.92.1"
+slug: fleet
+image: ghcr.io/datafx/{arch}-ha-fleet
+description: Fleet (osquery/fleetd) device management server with bundled MySQL 8.4 and Redis
+url: https://github.com/datafx/ha-fleet
+# Fleet only publishes a linux/amd64 server binary (fleetctl has arm64; fleet does not).
+arch:
+  - amd64
+startup: services
+boot: auto
+# mysqld needs time for a clean InnoDB shutdown; Supervisor's default is 10 s.
+timeout: 120
+# Stop the app during backups so the InnoDB datadir in /data is consistent.
+backup: cold
+ports:
+  1337/tcp: 1337
+ports_description:
+  1337/tcp: Fleet UI, REST API, and osquery/fleetd enrollment endpoint
+webui: "[PROTO:ssl]://[HOST]:[PORT:1337]"
+map:
+  - type: ssl
+    read_only: true
+options:
+  ssl: true
+  certfile: fullchain.pem
+  keyfile: privkey.pem
+  debug: false
+  innodb_buffer_pool_mb: 256
+schema:
+  ssl: bool
+  certfile: str
+  keyfile: str
+  license_key: password?
+  debug: bool
+  innodb_buffer_pool_mb: int(64,4096)
