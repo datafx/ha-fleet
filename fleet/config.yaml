@@ -1,5 +1,5 @@
 name: Fleet
-version: "4.92.1-1"
+version: "4.92.1.1"
 slug: fleet
 image: ghcr.io/datafx/{arch}-ha-fleet
 description: Fleet (osquery/fleetd) device management server with bundled MySQL 8.4 and Redis

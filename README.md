@@ -12,4 +12,4 @@ Architecture: amd64 only (Fleet does not publish an arm64 server binary).
 2. Merging to `main` triggers `build.yml`, which pushes `ghcr.io/datafx/amd64-ha-fleet:<version>`.
 3. Home Assistant sees the new `version` in `config.yaml` and offers the update; the app runs `fleet prepare db` on start, so migrations apply automatically.
 
-For packaging-only changes (run.sh, MySQL config), bump `version` in `fleet/config.yaml` yourself, e.g. `4.92.1-1`.
+For packaging-only changes (run.sh, MySQL config), bump `version` in `fleet/config.yaml` yourself, e.g. `4.92.1.1`.

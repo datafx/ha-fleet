@@ -1,4 +1,4 @@
-## 4.92.1-1
+## 4.92.1.1
 
 - Generate a self-signed cert (SANs from `tls_hostnames`) when `ssl: true` and no cert exists in `/ssl`
 - Validate TLS before starting MySQL; any startup failure now shuts mysqld down cleanly
