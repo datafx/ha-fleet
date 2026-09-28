@@ -70,6 +70,18 @@ gen_secret "$SECRETS/mysql_root_password" 24
 gen_secret "$SECRETS/mysql_fleet_password" 24
 gen_secret "$SECRETS/server_private_key" 32   # Fleet: >= 32 bytes, must never change
 
+# Windows MDM WSTEP identity (per fleetdm.com/guides/windows-mdm-setup). Generated once;
+# replacing it later breaks MDM on already-enrolled Windows hosts.
+WSTEP_KEY="$SECRETS/fleet-mdm-win-wstep.key"
+WSTEP_CRT="$SECRETS/fleet-mdm-win-wstep.crt"
+if [[ ! -s "$WSTEP_KEY" || ! -s "$WSTEP_CRT" ]]; then
+  log "Generating Windows MDM WSTEP certificate and key"
+  openssl genrsa -traditional -out "$WSTEP_KEY" 4096 2>/dev/null || fail "WSTEP key generation failed"
+  openssl req -x509 -new -nodes -key "$WSTEP_KEY" -sha256 -days 3652 \
+    -subj '/CN=Fleet Root CA/C=US/O=Fleet.' -out "$WSTEP_CRT" || fail "WSTEP cert generation failed"
+  chmod 600 "$WSTEP_KEY"
+fi
+
 ROOT_PW=$(<"$SECRETS/mysql_root_password")
 FLEET_PW=$(<"$SECRETS/mysql_fleet_password")
 
@@ -130,6 +142,8 @@ export FLEET_FILESYSTEM_AUDIT_LOG_FILE=/data/logs/fleet.audit.log
 export FLEET_FILESYSTEM_ENABLE_LOG_ROTATION=true
 export FLEET_FILESYSTEM_ENABLE_LOG_COMPRESSION=true
 export FLEET_LOGGING_DEBUG="$(opt .debug)"
+export FLEET_MDM_WINDOWS_WSTEP_IDENTITY_CERT="$WSTEP_CRT"
+export FLEET_MDM_WINDOWS_WSTEP_IDENTITY_KEY="$WSTEP_KEY"
 # Without S3 configured, Fleet keeps uploaded installers under os.TempDir().
 export TMPDIR=/data/tmp
 

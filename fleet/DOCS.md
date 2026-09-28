@@ -3,7 +3,7 @@
 Runs the Fleet server, MySQL 8.4 LTS and Redis in one container. All state lives in `/data`:
 
 - `mysql/` – InnoDB datadir
-- `secrets/` – generated MySQL passwords and `FLEET_SERVER_PRIVATE_KEY` (back this up; losing the key makes encrypted data such as MDM certs unrecoverable)
+- `secrets/` – generated MySQL passwords, `FLEET_SERVER_PRIVATE_KEY`, and the Windows MDM WSTEP cert/key (back this up; losing the private key makes encrypted data unrecoverable, and replacing the WSTEP pair breaks MDM on enrolled Windows hosts)
 - `logs/` – osquery status/result logs and Fleet audit log (rotated)
 - `tmp/` – locally stored software installers
 

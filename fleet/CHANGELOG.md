@@ -1,3 +1,7 @@
+## 4.92.1.2
+
+- Generate and configure the Windows MDM WSTEP certificate/key on first start (`/data/secrets`)
+
 ## 4.92.1.1
 
 - Generate a self-signed cert (SANs from `tls_hostnames`) when `ssl: true` and no cert exists in `/ssl`
