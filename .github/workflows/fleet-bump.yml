@@ -52,7 +52,7 @@ jobs:
 
       - name: Open pull request
         if: steps.fleet.outputs.update == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: bump/fleet-${{ steps.fleet.outputs.version }}
           delete-branch: true
