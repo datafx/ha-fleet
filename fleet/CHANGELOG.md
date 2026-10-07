@@ -1,3 +1,7 @@
+## 4.92.3
+
+- Update Fleet server to [v4.92.3](https://github.com/fleetdm/fleet/releases/tag/fleet-v4.92.3)
+
 ## 4.92.1.2
 
 - Generate and configure the Windows MDM WSTEP certificate/key on first start (`/data/secrets`)
