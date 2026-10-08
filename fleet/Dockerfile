@@ -1,6 +1,6 @@
 # ---- Stage 1: fetch the statically linked Fleet server binary ----
 FROM alpine:3.20 AS fleet
-ARG FLEET_VERSION=4.92.3
+ARG FLEET_VERSION=4.93.0
 RUN apk add --no-cache curl tar \
  && curl -fsSL -o /tmp/fleet.tgz \
       "https://github.com/fleetdm/fleet/releases/download/fleet-v${FLEET_VERSION}/fleet_v${FLEET_VERSION}_linux.tar.gz" \
