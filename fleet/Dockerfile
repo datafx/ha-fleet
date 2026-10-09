@@ -1,5 +1,5 @@
 # ---- Stage 1: fetch the statically linked Fleet server binary ----
-FROM alpine:3.20 AS fleet
+FROM mirror.gcr.io/library/alpine:3.20 AS fleet
 ARG FLEET_VERSION=4.93.0
 RUN apk add --no-cache curl tar \
  && curl -fsSL -o /tmp/fleet.tgz \
@@ -8,7 +8,7 @@ RUN apk add --no-cache curl tar \
  && install -m 0755 "/tmp/fleet_v${FLEET_VERSION}_linux/fleet" /fleet
 
 # ---- Stage 2: Oracle MySQL 8.4 LTS (Fleet does not support MariaDB) ----
-FROM mysql:8.4-oracle
+FROM mirror.gcr.io/library/mysql:8.4-oracle
 
 # redis, jq, openssl from Oracle Linux 9 BaseOS/AppStream
 RUN microdnf install -y redis jq openssl procps-ng \
