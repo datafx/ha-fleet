@@ -1,3 +1,7 @@
+## 4.93.2
+
+- Update Fleet server to [v4.93.2](https://github.com/fleetdm/fleet/releases/tag/fleet-v4.93.2)
+
 ## 4.93.0
 
 - Update Fleet server to [v4.93.0](https://github.com/fleetdm/fleet/releases/tag/fleet-v4.93.0)
